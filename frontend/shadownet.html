@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHADOWNET - Unrestricted Security AI</title>
+    <link rel="stylesheet" href="styles-fixed.css">
+    <style>
+        .shadownet-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 2rem;
+            height: calc(100vh - 4rem);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .shadownet-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 2rem;
+            background: linear-gradient(135deg, #1a1f2e 0%, #0a0e1a 100%);
+            border: 2px solid #ff0000;
+            border-radius: var(--radius-md);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .shadownet-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent, rgba(255, 0, 0, 0.1), transparent);
+            animation: scan 3s linear infinite;
+        }
+
+        @keyframes scan {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .shadownet-header h1 {
+            font-size: 3rem;
+            font-weight: 900;
+            color: #ff0000;
+            text-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .shadownet-header .subtitle {
+            color: #ff6666;
+            font-size: 1.1rem;
+            font-weight: 600;
+            position: relative;
+            z-index: 1;
+        }
+
+        .warning-banner {
+            background: rgba(255, 0, 0, 0.1);
+            border: 2px solid #ff0000;
+            border-radius: var(--radius-sm);
+            padding: 1rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .warning-icon {
+            font-size: 2rem;
+            color: #ff0000;
+        }
+
+        .warning-text {
+            flex: 1;
+            color: #ff6666;
+            font-size: 0.9rem;
+        }
+
+        .shadownet-grid {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 2rem;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .tools-sidebar {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+
+        .tools-sidebar h3 {
+            color: #ff0000;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .tool-item {
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 0.875rem;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .tool-item:hover {
+            border-color: #ff0000;
+            transform: translateX(5px);
+        }
+
+        .tool-item.available {
+            border-left: 3px solid #00ff88;
+        }
+
+        .tool-item.unavailable {
+            border-left: 3px solid #666;
+            opacity: 0.5;
+        }
+
+        .tool-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .tool-desc {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .chat-container-shadownet {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        .chat-messages-shadownet {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+            min-height: 0;
+        }
+
+        .message-shadownet {
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 0.3s ease;
+        }
+
+        .message-user-shadownet {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .message-user-shadownet .message-content-shadownet {
+            background: linear-gradient(135deg, #ff0000, #cc0000);
+            color: white;
+            padding: 1rem 1.25rem;
+            border-radius: var(--radius-md) var(--radius-md) 0 var(--radius-md);
+            max-width: 75%;
+        }
+
+        .message-ai-shadownet {
+            display: flex;
+            justify-content: flex-start;
+        }
+
+        .message-ai-shadownet .message-content-shadownet {
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            padding: 1rem 1.25rem;
+            border-radius: var(--radius-md) var(--radius-md) var(--radius-md) 0;
+            max-width: 80%;
+            border: 1px solid var(--border);
+        }
+
+        .tool-execution-box {
+            background: rgba(255, 0, 0, 0.05);
+            border: 2px solid #ff0000;
+            border-radius: var(--radius-sm);
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
+        .tool-execution-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #ff0000;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .tool-output {
+            background: #000;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            padding: 1rem;
+            border-radius: var(--radius-sm);
+            max-height: 300px;
+            overflow-y: auto;
+            font-size: 0.85rem;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .tool-analysis {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: var(--bg-surface);
+            border-radius: var(--radius-sm);
+            border-left: 3px solid #00ff88;
+        }
+
+        .chat-input-shadownet {
+            border-top: 1px solid var(--border);
+            padding: 1.5rem;
+        }
+
+        .input-wrapper-shadownet {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-end;
+        }
+
+        #shadownet-input {
+            flex: 1;
+            background: var(--bg-dark);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 1rem;
+            color: var(--text-primary);
+            font-family: inherit;
+            resize: vertical;
+            min-height: 60px;
+            max-height: 200px;
+        }
+
+        #shadownet-input:focus {
+            outline: none;
+            border-color: #ff0000;
+        }
+
+        .btn-send-shadownet {
+            background: linear-gradient(135deg, #ff0000, #cc0000);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            padding: 1rem 2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-send-shadownet:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 0, 0, 0.3);
+        }
+
+        .btn-send-shadownet:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .btn-action {
+            flex: 1;
+            padding: 0.75rem;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.85rem;
+        }
+
+        .btn-action:hover {
+            border-color: #ff0000;
+            background: rgba(255, 0, 0, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .shadownet-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tools-sidebar {
+                max-height: 200px;
+            }
+
+            .shadownet-header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="shadownet-container">
+        <div class="shadownet-header">
+            <h1>⚡ SHADOWNET ⚡</h1>
+            <div class="subtitle">Unrestricted Security AI • Tool Execution Enabled</div>
+        </div>
+
+        <div class="warning-banner">
+            <div class="warning-icon">⚠️</div>
+            <div class="warning-text">
+                <strong>AUTHORIZED USE ONLY</strong><br>
+                This AI has unrestricted access to security tools and techniques. Only use on authorized targets you own or have permission to test.
+            </div>
+        </div>
+
+        <div class="shadownet-grid">
+            <!-- Tools Sidebar -->
+            <div class="tools-sidebar">
+                <h3>🛠️ Available Tools</h3>
+                <div id="tools-list">
+                    <div style="text-align: center; color: var(--text-secondary); padding: 2rem;">
+                        Loading tools...
+                    </div>
+                </div>
+
+                <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border);">
+                    <button class="btn-action" onclick="clearConversation()">
+                        🗑️ Clear Chat
+                    </button>
+                </div>
+            </div>
+
+            <!-- Chat Area -->
+            <div class="chat-container-shadownet">
+                <div class="chat-messages-shadownet" id="shadownet-messages">
+                    <div style="text-align: center; padding: 3rem; color: var(--text-secondary);">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">⚡</div>
+                        <h2 style="color: #ff0000; margin-bottom: 0.5rem;">SHADOWNET ACTIVATED</h2>
+                        <p>Unrestricted AI with tool execution capabilities</p>
+                        <p style="margin-top: 1rem; font-size: 0.9rem;">
+                            Try: "Test SQL injection on https://target.com"<br>
+                            "Scan ports on 192.168.1.1"<br>
+                            "Find hidden directories on https://example.com"
+                        </p>
+                    </div>
+                </div>
+
+                <div class="chat-input-shadownet">
+                    <div class="action-buttons">
+                        <button class="btn-action" onclick="quickAssess('web')">
+                            🌐 Web Assessment
+                        </button>
+                        <button class="btn-action" onclick="quickAssess('network')">
+                            🔍 Network Scan
+                        </button>
+                        <button class="btn-action" onclick="quickAssess('sqli')">
+                            💉 SQL Injection Test
+                        </button>
+                    </div>
+
+                    <div class="input-wrapper-shadownet">
+                        <textarea
+                            id="shadownet-input"
+                            placeholder="Enter security testing command... (AI will automatically execute appropriate tools)"
+                            rows="2"
+                        ></textarea>
+                        <button class="btn-send-shadownet" id="btn-send" onclick="sendMessage()">
+                            EXECUTE
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="shadownet.js"></script>
+</body>
+</html>

@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vulnerability Scanner - AI Cybersecurity Platform</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .scanner-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .scanner-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .scanner-header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+
+        .scanner-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .scanner-card {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+        }
+
+        .scanner-card h2 {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.875rem;
+            background: var(--background-dark);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.1);
+        }
+
+        .scan-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .scan-type-card {
+            background: var(--background-dark);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .scan-type-card:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .scan-type-card.active {
+            border-color: var(--primary-color);
+            background: rgba(0, 255, 136, 0.1);
+        }
+
+        .scan-type-card input[type="checkbox"] {
+            margin-right: 0.5rem;
+        }
+
+        .btn-scan {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            border-radius: 8px;
+            color: var(--background-darker);
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-scan:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 255, 136, 0.4);
+        }
+
+        .btn-scan:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .results-container {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-top: 2rem;
+            display: none;
+        }
+
+        .results-container.show {
+            display: block;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .results-header h2 {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+        }
+
+        .export-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn-export {
+            padding: 0.5rem 1rem;
+            background: var(--surface-color);
+            border: 1px solid var(--primary-color);
+            border-radius: 6px;
+            color: var(--primary-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-export:hover {
+            background: var(--primary-color);
+            color: var(--background-darker);
+        }
+
+        .vulnerability-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .vuln-card {
+            background: var(--background-dark);
+            border-left: 4px solid;
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .vuln-card:hover {
+            transform: translateX(5px);
+        }
+
+        .vuln-card.critical {
+            border-color: #ff4757;
+        }
+
+        .vuln-card.high {
+            border-color: #ff6348;
+        }
+
+        .vuln-card.medium {
+            border-color: #ffa502;
+        }
+
+        .vuln-card.low {
+            border-color: #26de81;
+        }
+
+        .vuln-card.info {
+            border-color: var(--secondary-color);
+        }
+
+        .vuln-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+
+        .vuln-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .severity-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .severity-badge.critical {
+            background: #ff4757;
+            color: white;
+        }
+
+        .severity-badge.high {
+            background: #ff6348;
+            color: white;
+        }
+
+        .severity-badge.medium {
+            background: #ffa502;
+            color: white;
+        }
+
+        .severity-badge.low {
+            background: #26de81;
+            color: white;
+        }
+
+        .severity-badge.info {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .vuln-description {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .vuln-details {
+            background: var(--background-darker);
+            padding: 1rem;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        .thinking-animation {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            margin-top: 2rem;
+        }
+
+        .thinking-animation.show {
+            display: block;
+        }
+
+        .thinking-dots {
+            display: inline-flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .thinking-dot {
+            width: 12px;
+            height: 12px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            animation: thinking 1.4s ease-in-out infinite;
+        }
+
+        .thinking-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .thinking-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes thinking {
+            0%, 80%, 100% {
+                transform: scale(0.8);
+                opacity: 0.5;
+            }
+            40% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+        }
+
+        .scan-progress {
+            margin-top: 1rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--background-dark);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            width: 0%;
+            transition: width 0.3s ease;
+            animation: progress-shimmer 2s infinite;
+        }
+
+        @keyframes progress-shimmer {
+            0% {
+                background-position: -200%;
+            }
+            100% {
+                background-position: 200%;
+            }
+        }
+
+        .scan-status {
+            margin-top: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .scanner-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .export-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="scanner-container">
+        <a href="/" class="back-link" style="color: var(--secondary-color); text-decoration: none; margin-bottom: 2rem; display: inline-block;">
+            ← Back to Dashboard
+        </a>
+
+        <div class="scanner-header">
+            <h1>🔍 AI-Powered Vulnerability Scanner</h1>
+            <p style="color: var(--text-secondary);">Automated security testing for authorized targets</p>
+        </div>
+
+        <div class="scanner-grid">
+            <!-- Target Configuration -->
+            <div class="scanner-card">
+                <h2>🎯 Target Configuration</h2>
+                <div class="form-group">
+                    <label>Target URL</label>
+                    <input type="text" id="target-url" placeholder="https://example.com">
+                </div>
+
+                <div class="form-group">
+                    <label>Authorization Proof (Optional)</label>
+                    <textarea id="auth-proof" rows="3" placeholder="Bug bounty program link, authorization email, or proof of ownership..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="confirm-authorization" style="width: auto; margin-right: 0.5rem;">
+                        I confirm that I have authorization to test this target
+                    </label>
+                </div>
+            </div>
+
+            <!-- Scan Configuration -->
+            <div class="scanner-card">
+                <h2>⚙️ Scan Configuration</h2>
+
+                <div class="form-group">
+                    <label>Scan Types</label>
+                    <div class="scan-types">
+                        <div class="scan-type-card" onclick="toggleScanType('recon')">
+                            <input type="checkbox" id="scan-recon" checked>
+                            <label for="scan-recon">Reconnaissance</label>
+                        </div>
+                        <div class="scan-type-card" onclick="toggleScanType('sqli')">
+                            <input type="checkbox" id="scan-sqli" checked>
+                            <label for="scan-sqli">SQL Injection</label>
+                        </div>
+                        <div class="scan-type-card" onclick="toggleScanType('xss')">
+                            <input type="checkbox" id="scan-xss" checked>
+                            <label for="scan-xss">XSS</label>
+                        </div>
+                        <div class="scan-type-card" onclick="toggleScanType('port')">
+                            <input type="checkbox" id="scan-port">
+                            <label for="scan-port">Port Scan</label>
+                        </div>
+                        <div class="scan-type-card" onclick="toggleScanType('ssl')">
+                            <input type="checkbox" id="scan-ssl" checked>
+                            <label for="scan-ssl">SSL/TLS</label>
+                        </div>
+                        <div class="scan-type-card" onclick="toggleScanType('headers')">
+                            <input type="checkbox" id="scan-headers" checked>
+                            <label for="scan-headers">Headers</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Scan Depth</label>
+                    <select id="scan-depth">
+                        <option value="quick">Quick Scan (5-10 min)</option>
+                        <option value="standard" selected>Standard Scan (15-30 min)</option>
+                        <option value="deep">Deep Scan (30-60 min)</option>
+                    </select>
+                </div>
+
+                <button class="btn-scan" onclick="startScan()">
+                    🚀 Start Security Scan
+                </button>
+            </div>
+        </div>
+
+        <!-- Thinking/Scanning Animation -->
+        <div id="thinking-animation" class="thinking-animation">
+            <h3 style="color: var(--primary-color); margin-bottom: 1rem;">🤖 AI is analyzing target...</h3>
+            <p id="scan-status-text" style="color: var(--text-secondary);">Initializing scan...</p>
+            <div class="thinking-dots">
+                <span class="thinking-dot"></span>
+                <span class="thinking-dot"></span>
+                <span class="thinking-dot"></span>
+            </div>
+            <div class="scan-progress">
+                <div class="progress-bar">
+                    <div id="progress-fill" class="progress-fill"></div>
+                </div>
+                <div id="scan-status" class="scan-status">Preparing scan environment...</div>
+            </div>
+        </div>
+
+        <!-- Results Container -->
+        <div id="results-container" class="results-container">
+            <div class="results-header">
+                <h2>📊 Scan Results</h2>
+                <div class="export-buttons">
+                    <button class="btn-export" onclick="exportReport('docx')">
+                        📄 Export DOCX
+                    </button>
+                    <button class="btn-export" onclick="exportReport('excel')">
+                        📊 Export Excel
+                    </button>
+                    <button class="btn-export" onclick="exportReport('pdf')">
+                        📑 Export PDF
+                    </button>
+                </div>
+            </div>
+
+            <div id="vulnerability-list" class="vulnerability-list">
+                <!-- Vulnerabilities will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="scanner.js"></script>
+</body>
+</html>

@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Built-in Tools - AI Cybersecurity Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #00ff88;
+            --secondary-color: #00ccff;
+            --background-dark: #0a0e27;
+            --background-darker: #050816;
+            --surface-color: #1a1f3a;
+            --text-primary: #ffffff;
+            --text-secondary: #a0aec0;
+            --border-color: #2d3748;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--background-darker);
+            color: var(--text-primary);
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 2rem;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .tool-card {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .tool-card h2 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        textarea, input, select {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--background-dark);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        textarea:focus, input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        button {
+            width: 100%;
+            padding: 0.75rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            border-radius: 8px;
+            color: var(--background-darker);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 0.5rem;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 255, 136, 0.3);
+        }
+
+        .result {
+            background: var(--background-darker);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            border: 1px solid var(--border-color);
+            font-family: 'Courier New', monospace;
+            word-break: break-all;
+            display: none;
+        }
+
+        .result.show {
+            display: block;
+        }
+
+        .result-label {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .copy-btn {
+            background: var(--surface-color);
+            color: var(--primary-color);
+            padding: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: var(--secondary-color);
+            text-decoration: none;
+            margin-bottom: 2rem;
+        }
+
+        .back-link:hover {
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-link">← Back to Dashboard</a>
+
+        <h1>🛠️ Built-in Security Tools</h1>
+
+        <div class="tools-grid">
+            <!-- Base64 Encoder/Decoder -->
+            <div class="tool-card">
+                <h2>Base64 Encode/Decode</h2>
+                <div class="form-group">
+                    <label>Input Text:</label>
+                    <textarea id="base64-input" placeholder="Enter text to encode/decode..."></textarea>
+                </div>
+                <button onclick="base64Encode()">Encode</button>
+                <button onclick="base64Decode()">Decode</button>
+                <div id="base64-result" class="result">
+                    <div class="result-label">Result:</div>
+                    <div id="base64-output"></div>
+                    <button class="copy-btn" onclick="copyToClipboard('base64-output')">Copy</button>
+                </div>
+            </div>
+
+            <!-- URL Encoder/Decoder -->
+            <div class="tool-card">
+                <h2>URL Encode/Decode</h2>
+                <div class="form-group">
+                    <label>Input Text:</label>
+                    <textarea id="url-input" placeholder="Enter URL or text..."></textarea>
+                </div>
+                <button onclick="urlEncode()">Encode</button>
+                <button onclick="urlDecode()">Decode</button>
+                <div id="url-result" class="result">
+                    <div class="result-label">Result:</div>
+                    <div id="url-output"></div>
+                    <button class="copy-btn" onclick="copyToClipboard('url-output')">Copy</button>
+                </div>
+            </div>
+
+            <!-- Hash Generator -->
+            <div class="tool-card">
+                <h2>Hash Generator</h2>
+                <div class="form-group">
+                    <label>Input Text:</label>
+                    <textarea id="hash-input" placeholder="Enter text to hash..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Hash Type:</label>
+                    <select id="hash-type">
+                        <option value="md5">MD5</option>
+                        <option value="sha1">SHA-1</option>
+                        <option value="sha256">SHA-256</option>
+                        <option value="sha512">SHA-512</option>
+                    </select>
+                </div>
+                <button onclick="generateHash()">Generate Hash</button>
+                <div id="hash-result" class="result">
+                    <div class="result-label">Hash Result:</div>
+                    <div id="hash-output"></div>
+                    <button class="copy-btn" onclick="copyToClipboard('hash-output')">Copy</button>
+                </div>
+            </div>
+
+            <!-- ROT13 -->
+            <div class="tool-card">
+                <h2>ROT13 Cipher</h2>
+                <div class="form-group">
+                    <label>Input Text:</label>
+                    <textarea id="rot13-input" placeholder="Enter text for ROT13..."></textarea>
+                </div>
+                <button onclick="rot13Transform()">Transform (Encode/Decode)</button>
+                <div id="rot13-result" class="result">
+                    <div class="result-label">Result:</div>
+                    <div id="rot13-output"></div>
+                    <button class="copy-btn" onclick="copyToClipboard('rot13-output')">Copy</button>
+                </div>
+            </div>
+
+            <!-- Hex Converter -->
+            <div class="tool-card">
+                <h2>Hex Converter</h2>
+                <div class="form-group">
+                    <label>Input Text:</label>
+                    <textarea id="hex-input" placeholder="Enter text or hex..."></textarea>
+                </div>
+                <button onclick="textToHex()">Text to Hex</button>
+                <button onclick="hexToText()">Hex to Text</button>
+                <div id="hex-result" class="result">
+                    <div class="result-label">Result:</div>
+                    <div id="hex-output"></div>
+                    <button class="copy-btn" onclick="copyToClipboard('hex-output')">Copy</button>
+                </div>
+            </div>
+
+            <!-- Binary Converter -->
+            <div class="tool-card">
+                <h2>Binary Converter</h2>
+                <div class="form-group">
+                    <label>Input Text:</label>
+                    <textarea id="binary-input" placeholder="Enter text or binary..."></textarea>
+                </div>
+                <button onclick="textToBinary()">Text to Binary</button>
+                <button onclick="binaryToText()">Binary to Text</button>
+                <div id="binary-result" class="result">
+                    <div class="result-label">Result:</div>
+                    <div id="binary-output"></div>
+                    <button class="copy-btn" onclick="copyToClipboard('binary-output')">Copy</button>
+                </div>
+            </div>
+
+            <!-- Caesar Cipher -->
+            <div class="tool-card">
+                <h2>Caesar Cipher</h2>
+                <div class="form-group">
+                    <label>Input Text:</label>
+                    <textarea id="caesar-input" placeholder="Enter text..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Shift:</label>
+                    <input type="number" id="caesar-shift" value="3" min="-25" max="25">
+                </div>
+                <button onclick="caesarEncrypt()">Encrypt</button>
+                <button onclick="caesarDecrypt()">Decrypt</button>
+                <div id="caesar-result" class="result">
+                    <div class="result-label">Result:</div>
+                    <div id="caesar-output"></div>
+                    <button class="copy-btn" onclick="copyToClipboard('caesar-output')">Copy</button>
+                </div>
+            </div>
+
+            <!-- ASCII Converter -->
+            <div class="tool-card">
+                <h2>ASCII Converter</h2>
+                <div class="form-group">
+                    <label>Input Text:</label>
+                    <textarea id="ascii-input" placeholder="Enter text or ASCII codes..."></textarea>
+                </div>
+                <button onclick="textToAscii()">Text to ASCII</button>
+                <button onclick="asciiToText()">ASCII to Text</button>
+                <div id="ascii-result" class="result">
+                    <div class="result-label">Result:</div>
+                    <div id="ascii-output"></div>
+                    <button class="copy-btn" onclick="copyToClipboard('ascii-output')">Copy</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="tools-implementation.js"></script>
+</body>
+</html>

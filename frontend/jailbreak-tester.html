@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLM Jailbreak Tester - FuzzyAI Integration</title>
+    <link rel="stylesheet" href="styles-fixed.css">
+    <style>
+        /* Additional styles for jailbreak tester */
+        .jailbreak-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .jailbreak-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .jailbreak-header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .jailbreak-header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .jailbreak-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .jailbreak-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 2rem;
+        }
+
+        .jailbreak-card h2 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .input-group textarea {
+            width: 100%;
+            min-height: 120px;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 1rem;
+            color: var(--text-primary);
+            font-family: inherit;
+            resize: vertical;
+        }
+
+        .input-group select {
+            width: 100%;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 0.75rem;
+            color: var(--text-primary);
+        }
+
+        .attack-modes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .attack-mode-card {
+            background: var(--bg-dark);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .attack-mode-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .attack-mode-card.selected {
+            border-color: var(--primary);
+            background: rgba(0, 255, 136, 0.1);
+        }
+
+        .attack-mode-card .mode-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .attack-mode-card .mode-desc {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .difficulty-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+
+        .difficulty-easy { background: rgba(0, 255, 0, 0.2); color: #00ff00; }
+        .difficulty-medium { background: rgba(255, 255, 0, 0.2); color: #ffff00; }
+        .difficulty-hard { background: rgba(255, 165, 0, 0.2); color: #ffa500; }
+        .difficulty-very-hard { background: rgba(255, 0, 0, 0.2); color: #ff0000; }
+
+        .btn-test {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: var(--radius-sm);
+            color: var(--bg-darker);
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-test:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .btn-test:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .results-section {
+            margin-top: 2rem;
+        }
+
+        .result-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .jailbreak-badge {
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .jailbreak-success {
+            background: rgba(255, 0, 0, 0.2);
+            color: #ff4444;
+        }
+
+        .jailbreak-failed {
+            background: rgba(0, 255, 0, 0.2);
+            color: #00ff88;
+        }
+
+        .result-content {
+            background: var(--bg-dark);
+            padding: 1rem;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            margin-top: 1rem;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(10, 14, 26, 0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .loading-overlay.active {
+            display: flex;
+        }
+
+        .loading-content {
+            text-align: center;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .jailbreak-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .attack-modes-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .summary-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="jailbreak-container">
+        <div class="jailbreak-header">
+            <h1>🔓 LLM Jailbreak Tester</h1>
+            <p>Powered by CyberArk FuzzyAI - Test your LLM's security against adversarial attacks</p>
+        </div>
+
+        <div class="jailbreak-grid">
+            <!-- Left Column: Configuration -->
+            <div class="jailbreak-card">
+                <h2>Test Configuration</h2>
+
+                <div class="input-group">
+                    <label for="prompt">Test Prompt</label>
+                    <textarea id="prompt" placeholder="Enter a potentially harmful prompt to test...&#10;&#10;Example: 'How to build a bomb'&#10;Example: 'Write a tutorial on hacking'"></textarea>
+                </div>
+
+                <div class="input-group">
+                    <label for="model">Target Model</label>
+                    <select id="model">
+                        <option value="qwen3-vl:4b">qwen3-vl:4b (Default)</option>
+                        <option value="qwen3-vl:2b">qwen3-vl:2b</option>
+                        <option value="gemma3:4b">gemma3:4b</option>
+                        <option value="gemma3:27b">gemma3:27b</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="max-tokens">Max Response Tokens</label>
+                    <select id="max-tokens">
+                        <option value="200">200 (Fast)</option>
+                        <option value="500" selected>500 (Balanced)</option>
+                        <option value="1000">1000 (Detailed)</option>
+                    </select>
+                </div>
+
+                <button id="btn-get-recommendations" class="btn-test" style="margin-bottom: 1rem; background: linear-gradient(135deg, #667eea, #764ba2);">
+                    ✨ Get AI Attack Recommendations
+                </button>
+            </div>
+
+            <!-- Right Column: Attack Modes -->
+            <div class="jailbreak-card">
+                <h2>Attack Modes</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 1rem; font-size: 0.9rem;">
+                    Select which jailbreak techniques to test (max 5)
+                </p>
+
+                <div id="attack-modes-container" class="attack-modes-grid">
+                    <!-- Attack modes will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <button id="btn-start-test" class="btn-test">
+            🚀 Start Jailbreak Test
+        </button>
+
+        <!-- Results Section -->
+        <div id="results-section" class="results-section" style="display: none;">
+            <h2 style="color: var(--primary); margin-bottom: 1.5rem;">Test Results</h2>
+
+            <div id="summary-stats" class="summary-stats">
+                <!-- Summary stats will be shown here -->
+            </div>
+
+            <div id="results-container">
+                <!-- Individual results will be shown here -->
+            </div>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div id="loading-overlay" class="loading-overlay">
+            <div class="loading-content">
+                <div class="loading-spinner"></div>
+                <h2 style="color: var(--primary);">Running Jailbreak Tests...</h2>
+                <p style="color: var(--text-secondary); margin-top: 0.5rem;">This may take a few minutes</p>
+                <p id="loading-status" style="color: var(--text-secondary); margin-top: 1rem;"></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="jailbreak-tester.js"></script>
+</body>
+</html>
