@@ -26,7 +26,7 @@ const { Packer } = require('docx');
 
 const app = express();
 const PORT = 4356;
-const JWT_SECRET = 'cybersecurity-platform-secret-key-2024'; // Change this in production
+const JWT_SECRET = process.env.JWT_SECRET || 'YOUR_JWT_SECRET'; // Change this in production
 
 // Middleware
 app.use(cors());
@@ -34,7 +34,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(session({
-  secret: 'cybersecurity-session-secret',
+  secret: process.env.SESSION_SECRET || 'YOUR_SESSION_SECRET',
   resave: false,
   saveUninitialized: false,
   cookie: { secure: false } // Set to true if using HTTPS
